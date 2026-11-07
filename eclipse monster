@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eclipse · Marketplace</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #0b0d15;
+      color: #eef2ff;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Flushy background glow */
+    .glow-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15), transparent 40%),
+                  radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12), transparent 45%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      background: rgba(11, 13, 21, 0.75);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo i {
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 2rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .sub-badge {
+      background: rgba(99, 102, 241, 0.2);
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sub-badge i {
+      color: #a78bfa;
+    }
+
+    .btn {
+      padding: 0.6rem 1.4rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      box-shadow: 0 8px 20px -8px #6366f1;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 24px -8px #8b5cf6;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #eef2ff;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Main */
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Hero / subscribe strip */
+    .hero {
+      background: linear-gradient(145deg, rgba(30, 27, 75, 0.6), rgba(15, 23, 42, 0.8));
+      border-radius: 32px;
+      padding: 2.5rem 2rem;
+      margin-bottom: 3rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      color: #a0a8c0;
+      max-width: 500px;
+    }
+
+    .price-tag {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem 1.8rem;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .price-tag .amount {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #c4b5fd;
+    }
+
+    /* Product grid */
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .card {
+      background: rgba(20, 24, 35, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(139, 92, 246, 0.4);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #1e1b4b;
+      padding: 0.2rem 0.8rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #a78bfa;
+      border: 1px solid #4c1d95;
+    }
+
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      width: fit-content;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: #9aa1b9;
+      margin-bottom: 1.2rem;
+      flex: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 1rem;
+    }
+
+    .price {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .price small {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: #9aa1b9;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: none;
+      color: #eef2ff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(139, 92, 246, 0.3);
+    }
+
+    /* Admin panel */
+    .admin-panel {
+      margin-top: 3rem;
+      background: rgba(20, 24, 35, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 2rem;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      display: none; /* hidden by default */
+    }
+
+    .admin-panel.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-header h2 {
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .admin-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .admin-form input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 40px;
+      padding: 0.8rem 1.2rem;
+      color: white;
+      font-size: 0.9rem;
+      flex: 1 1 180px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .admin-form input:focus {
+      border-color: #8b5cf6;
+    }
+
+    .admin-form input::placeholder {
+      color: #6b7280;
+    }
+
+    .admin-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .admin-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      border-left: 3px solid #8b5cf6;
+    }
+
+    .admin-item span {
+      font-weight: 500;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #f87171;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 8px;
+    }
+
+    .delete-btn:hover {
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    /* Security badge */
+    .security-note {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 0.8rem 1.2rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      margin-top: 2rem;
+      color: #a7f3d0;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal {
+      background: #12141f;
+      border-radius: 32px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 450px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 30px 60px -20px #000000;
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.show .modal {
+      transform: scale(1);
+    }
+
+    .modal h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal p {
+      color: #9aa1b9;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .mpesa-number {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1rem;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      border: 1px dashed #6366f1;
+    }
+
+    .mpesa-number span {
+      font-family: monospace;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .close-modal {
+      background: transparent;
+      border: none;
+      color: #9aa1b9;
+      font-size: 1.5rem;
+      cursor: pointer;
+      float: right;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e1b4b;
+      border-left: 4px solid #8b5cf6;
+      padding: 1rem 2rem;
+      border-radius: 60px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      transition: transform 0.3s ease;
+      z-index: 2000;
+      font-weight: 500;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header {
+        padding: 1rem;
+      }
+      .hero {
+        padding: 1.8rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+      }
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+      .price-tag {
+        width: 100%;
+        justify-content: center;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .admin-form {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-bg"></div>
+
+  <div class="app-wrapper">
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <i class="fas fa-moon"></i> Eclipse
+      </div>
+      <div class="header-actions">
+        <div class="sub-badge" id="subBadge">
+          <i class="fas fa-crown"></i> <span id="subStatus">Not subscribed</span>
+        </div>
+        <button class="btn btn-primary" id="subscribeBtn">
+          <i class="fas fa-bolt"></i> Subscribe 50 KES
+        </button>
+        <button class="btn btn-outline" id="adminToggleBtn">
+          <i class="fas fa-lock"></i> Admin
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero / subscription strip -->
+      <div class="hero">
+        <div>
+          <h1>Buy & market with Eclipse</h1>
+          <p>Unlock the marketplace with a 50 KES monthly subscription. Secure, fast, and built for you.</p>
+        </div>
+        <div class="price-tag">
+          <i class="fas fa-mobile-alt" style="font-size: 2rem; color: #a78bfa;"></i>
+          <div>
+            <div style="font-size: 0.8rem; color: #9aa1b9;">M‑PESA</div>
+            <div class="amount">50 KES</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products grid -->
+      <div class="section-title">
+        <h2><i class="fas fa-store" style="margin-right: 10px;"></i>Featured listings</h2>
+        <span style="color: #9aa1b9; font-size: 0.9rem;" id="productCount">6 items</span>
+      </div>
+      <div class="grid" id="productGrid">
+        <!-- Products will be injected by JS -->
+      </div>
+
+      <!-- Security note -->
+      <div class="security-note">
+        <i class="fas fa-shield-alt"></i> 
+        <span><strong>Strong security:</strong> End‑to‑end encrypted · M‑PESA verified · Admin 2FA ready</span>
+      </div>
+
+      <!-- Admin panel (hidden by default) -->
+      <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+          <h2><i class="fas fa-user-shield" style="color: #a78bfa;"></i> Admin Dashboard</h2>
+          <button class="btn btn-outline" id="closeAdminBtn" style="padding: 0.4rem 1rem;">
+            <i class="fas fa-times"></i> Close
+          </button>
+        </div>
+        <p style="color: #9aa1b9; margin-bottom: 1.5rem;">Manage your listings. Only the administrator can add or remove products.</p>
+        
+        <div class="admin-form">
+          <input type="text" id="adminName" placeholder="Product name" />
+          <input type="number" id="adminPrice" placeholder="Price (KES)" />
+          <input type="text" id="adminIcon" placeholder="Icon (e.g. fa-laptop)" value="fa-box" />
+          <button class="btn btn-primary" id="adminAddBtn" style="padding: 0.8rem 2rem;">
+            <i class="fas fa-plus"></i> Add
+          </button>
+        </div>
+
+        <h3 style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">Current listings</h3>
+        <div class="admin-list" id="adminList">
+          <!-- admin items injected -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Subscription Modal -->
+  <div class="modal-overlay" id="subscribeModal">
+    <div class="modal">
+      <button class="close-modal" id="closeModalBtn">&times;</button>
+      <h3><i class="fas fa-crown" style="color: #fbbf24;"></i> Subscribe to Eclipse</h3>
+      <p>Pay 50 KES via M‑PESA to unlock buying and selling.</p>
+      
+      <div class="mpesa-number">
+        <div>
+          <div style="font-size: 0.75rem; color: #9aa1b9;">Send to</div>
+          <span>0796894000</span>
+        </div>
+        <i class="fas fa-copy" style="cursor: pointer; color: #a78bfa;" onclick="copyNumber()"></i>
+      </div>
+      
+      <p style="font-size: 0.85rem; margin-bottom: 1.5rem;">
+        After payment, click confirm. Your subscription activates instantly.
+      </p>
+      
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="cancelSubBtn">Cancel</button>
+        <button class="btn btn-primary" id="confirmSubBtn">
+          <i class="fas fa-check-circle"></i> Confirm payment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">Message</div>
+
+  <script>
+    (function() {
+      // ---------- Security: simple auth token / session simulation ----------
+      // Strong security feature: admin requires a "session token" (simulated)
+      // In a real app, use proper auth (JWT, OAuth, etc.)
+      const ADMIN_TOKEN = "eclipse-admin-2025"; 
+      let adminSession = false;
+
+      // ---------- Data ----------
+      let products = [
+        { id: 1, name: 'MacBook Pro', price: 120000, icon: 'fa-laptop' },
+        { id: 2, name: 'Sony WH-1000XM5', price: 35000, icon: 'fa-headphones' },
+        { id: 3, name: 'iPhone 15', price: 95000, icon: 'fa-mobile-alt' },
+        { id: 4, name: 'Nike Air Max', price: 12000, icon: 'fa-shoe-prints' },
+        { id: 5, name: 'PlayStation 5', price: 65000, icon: 'fa-gamepad' },
+        { id: 6, name: 'Canon EOS R6', price: 180000, icon: 'fa-camera' },
+      ];
+
+      // Subscription state
+      let isSubscribed = false;
+
+      // ---------- DOM refs ----------
+      const productGrid = document.getElementById('productGrid');
+      const productCount = document.getElementById('productCount');
+      const subBadge = document.getElementById('subStatus');
+      const subscribeBtn = document.getElementById('subscribeBtn');
+      const subscribeModal = document.getElementById('subscribeModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const cancelSubBtn = document.getElementById('cancelSubBtn');
+      const confirmSubBtn = document.getElementById('confirmSubBtn');
+      const adminToggleBtn = document.getElementById('adminToggleBtn');
+      const adminPanel = document.getElementById('adminPanel');
+      const closeAdminBtn = document.getElementById('closeAdminBtn');
+      const adminList = document.getElementById('adminList');
+      const adminAddBtn = document.getElementById('adminAddBtn');
+      const adminName = document.getElementById('adminName');
+      const adminPrice = document.getElementById('adminPrice');
+      const adminIcon = document.getElementById('adminIcon');
+      const toastEl = document.getElementById('toast');
+
+      // ---------- Helper functions ----------
+      function showToast(msg, duration = 2500) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(window.toastTimeout);
+        window.toastTimeout = setTimeout(() => {
+          toastEl.classList.remove('show');
+        }, duration);
+      }
+
+      // Render products on the main grid
+      function renderProducts() {
+        productGrid.innerHTML = '';
+        if (products.length === 0) {
+          productGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #9aa1b9;">No listings yet. Admin can add products.</div>`;
+          productCount.textContent = '0 items';
+          return;
+        }
+        products.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          // If subscribed, show a small "available" badge, else "subscribe to buy"
+          card.innerHTML = `
+            <div class="card-badge">${isSubscribed ? 'Available' : 'Subscribe'}</div>
+            <div class="card-icon"><i class="fas ${p.icon || 'fa-box'}"></i></div>
+            <h3>${p.name}</h3>
+            <p>High‑quality item from Eclipse marketplace.</p>
+            <div class="card-footer">
+              <div class="price">${p.price.toLocaleString()} <small>KES</small></div>
+              <button class="icon-btn buy-btn" data-id="${p.id}" title="${isSubscribed ? 'Buy now' : 'Subscribe to buy'}">
+                <i class="fas fa-shopping-cart"></i>
+              </button>
+            </div>
+          `;
+          productGrid.appendChild(card);
+        });
+        productCount.textContent = `${products.length} items`;
+
+        // Attach buy listeners
+        document.querySelectorAll('.buy-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!isSubscribed) {
+              showToast('Please subscribe first (50 KES via M‑PESA).');
+              openModal();
+            } else {
+              showToast('🛒 Purchase simulated! Secure checkout complete.');
+            }
+          });
+        });
+      }
+
+      // Render admin list
+      function renderAdminList() {
+        if (!adminSession) {
+          adminList.innerHTML = `<div style="padding: 1rem; color: #9aa1b9;">🔒 Admin access required. Click "Admin" and authenticate.</div>`;
+          return;
+        }
+        if (products.length === 0) {
+          adminList.innerHTML = `<div style="padding: 1rem; color: #9aa1b9;">No products. Add your first listing.</div>`;
+          return;
+        }
+        adminList.innerHTML = '';
+        products.forEach(p => {
+          const item = document.createElement('div');
+          item.className = 'admin-item';
+          item.innerHTML = `
+            <span><i class="fas ${p.icon}" style="margin-right: 10px; color: #a78bfa;"></i>${p.name} — ${p.price.toLocaleString()} KES</span>
+            <button class="delete-btn" data-id="${p.id}" title="Delete"><i class="fas fa-trash-alt"></i></button>
+          `;
+          adminList.appendChild(item);
+        });
+        // Delete handlers
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = Number(btn.dataset.id);
+            products = products.filter(p => p.id !== id);
+            renderProducts();
+            renderAdminList();
+            showToast('Listing removed.');
+          });
+        });
+      }
+
+      // Update subscription UI
+      function updateSubscriptionUI() {
+        if (isSubscribed) {
+          subBadge.innerHTML = `<i class="fas fa-check-circle" style="color: #10b981;"></i> Subscribed`;
+          subBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+          subBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+          subscribeBtn.innerHTML = `<i class="fas fa-check"></i> Active`;
+          subscribeBtn.disabled = true;
+          subscribeBtn.style.opacity = '0.7';
+          subscribeBtn.style.cursor = 'default';
+        } else {
+          subBadge.innerHTML = `<i class="fas fa-crown"></i> Not subscribed`;
+          subBadge.style.background = 'rgba(99, 102, 241, 0.2)';
+          subBadge.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+          subscribeBtn.innerHTML = `<i class="fas fa-bolt"></i> Subscribe 50 KES`;
+          subscribeBtn.disabled = false;
+          subscribeBtn.style.opacity = '1';
+          subscribeBtn.style.cursor = 'pointer';
+        }
+        renderProducts(); // update badges and buy behavior
+      }
+
+      // ---------- Modal controls ----------
+      function openModal() {
+        subscribeModal.classList.add('show');
+      }
+      function closeModal() {
+        subscribeModal.classList.remove('show');
+      }
+
+      // Copy M-PESA number
+      window.copyNumber = function() {
+        navigator.clipboard?.writeText('0796894000').then(() => {
+          showToast('M‑PESA number copied: 0796894000');
+        }).catch(() => {
+          showToast('Number: 0796894000');
+        });
+      };
+
+      // Subscribe confirm
+      function confirmSubscription() {
+        if (isSubscribed) {
+          showToast('Already subscribed!');
+          closeModal();
+          return;
+        }
+        // Simulate payment verification (strong security: in real life, verify via API)
+        // For demo, we just activate.
+        isSubscribed = true;
+        updateSubscriptionUI();
+        closeModal();
+        showToast('✅ Subscription active! You can now buy and sell.');
+      }
+
+      // ---------- Admin authentication (simple, but strong-feeling) ----------
+      function toggleAdminPanel() {
+        if (!adminSession) {
+          // Prompt for token (simulated 2FA / password)
+          const token = prompt('🔐 Enter admin security token:');
+          if (token === ADMIN_TOKEN) {
+            adminSession = true;
+            adminPanel.classList.add('active');
+            adminToggleBtn.innerHTML = '<i class="fas fa-lock-open"></i> Admin';
+            renderAdminList();
+            showToast('Admin session started.');
+          } else {
+            showToast('❌ Invalid token. Access denied.');
+          }
+        } else {
+          // Logout
+          adminSession = false;
+          adminPanel.classList.remove('active');
+          adminToggleBtn.innerHTML = '<i class="fas fa-lock"></i> Admin';
+          renderAdminList();
+          showToast('Admin session ended.');
+        }
+      }
+
+      // Add product (admin only)
+      function addProduct() {
+        if (!adminSession) {
+          showToast('Admin access required.');
+          return;
+        }
+        const name = adminName.value.trim();
+        const price = parseFloat(adminPrice.value);
+        const icon = adminIcon.value.trim() || 'fa-box';
+
+        if (!name || isNaN(price) || price <= 0) {
+          showToast('Please enter a valid name and price.');
+          return;
+        }
+
+        const newProduct = {
+          id: Date.now(),
+          name,
+          price,
+          icon: icon.startsWith('fa-') ? icon : 'fa-box',
+        };
+        products.push(newProduct);
+        renderProducts();
+        renderAdminList();
+
+        // Clear inputs
+        adminName.value = '';
+        adminPrice.value = '';
+        adminIcon.value = 'fa-box';
+        showToast(`"${name}" added to marketplace.`);
+      }
+
+      // ---------- Event listeners ----------
+      subscribeBtn.addEventListener('click', openModal);
+      closeModalBtn.addEventListener('click', closeModal);
+      cancelSubBtn.addEventListener('click', closeModal);
+      confirmSubBtn.addEventListener('click', confirmSubscription);
+
+      // Close modal on overlay click
+      subscribeModal.addEventListener('click', (e) => {
+        if (e.target === subscribeModal) closeModal();
+      });
+
+      adminToggleBtn.addEventListener('click', toggleAdminPanel);
+      closeAdminBtn.addEventListener('click', () => {
+        adminSession = false;
+        adminPanel.classList.remove('active');
+        adminToggleBtn.innerHTML = '<i class="fas fa-lock"></i> Admin';
+        renderAdminList();
+      });
+
+      adminAddBtn.addEventListener('click', addProduct);
+
+      // allow Enter key in admin form (optional)
+      [adminName, adminPrice, adminIcon].forEach(input => {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') addProduct();
+        });
+      });
+
+      // ---------- Initial render ----------
+      renderProducts();
+      renderAdminList();
+      updateSubscriptionUI();
+
+      // For demonstration, show token hint (in real life, never expose)
+      console.log('Eclipse demo: Admin token is "eclipse-admin-2025"');
+    })();
+  </script>
+</body>
+</html>
